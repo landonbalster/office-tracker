@@ -508,6 +508,45 @@
   });
 
   render();
+
+  // ── Auto check-in via WiFi detection ────────────────────────────────────────
+  // Triggered when check-office.ps1 opens this file with ?auto=1
+  (function autoCheckin() {
+    if (!new URLSearchParams(window.location.search).has('auto')) return;
+
+    const today = new Date();
+    const y = today.getFullYear();
+    const m = today.getMonth();
+    const d = today.getDate();
+
+    // Only mark weekdays; skip if already marked
+    if (isWeekend(y, m, d)) return;
+    const existing = getMonthData(y, m)[d];
+    if (existing) return;
+
+    // Navigate calendar to current month if needed, then mark today
+    year  = y;
+    month = m;
+    setDay(y, m, d, 'in-office');
+    render();
+
+    // Show a brief confirmation banner
+    const banner = document.createElement('div');
+    banner.textContent = 'Auto-checked in via office WiFi';
+    Object.assign(banner.style, {
+      position: 'fixed', bottom: '24px', left: '50%',
+      transform: 'translateX(-50%)',
+      background: '#22c55e', color: '#fff',
+      padding: '10px 22px', borderRadius: '10px',
+      fontWeight: '600', fontSize: '0.9rem',
+      boxShadow: '0 4px 16px rgba(0,0,0,0.18)',
+      zIndex: '9999', opacity: '1',
+      transition: 'opacity 0.5s ease',
+    });
+    document.body.appendChild(banner);
+    setTimeout(() => { banner.style.opacity = '0'; }, 3000);
+    setTimeout(() => { banner.remove(); }, 3600);
+  })();
 </script>
 </body>
 </html>
