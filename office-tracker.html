@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Office Attendance Tracker</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f0f2f5;
+      color: #1a1a2e;
+      min-height: 100vh;
+      padding: 28px 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    header h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    header p {
+      font-size: 0.85rem;
+      color: #888;
+      margin-top: 4px;
+    }
+
+    .app {
+      display: flex;
+      gap: 24px;
+      max-width: 980px;
+      margin: 0 auto;
+      align-items: flex-start;
+    }
+
+    /* ── Calendar ── */
+    .calendar-section {
+      flex: 1;
+      background: #fff;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    }
+
+    .month-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .month-nav h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .nav-btn {
+      background: #f5f5f7;
+      border: none;
+      border-radius: 8px;
+      width: 34px;
+      height: 34px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      color: #444;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+    }
+
+    .nav-btn:hover { background: #e8e8ea; }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+    }
+
+    .day-header {
+      text-align: center;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #aaa;
+      padding-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .day-cell {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      user-select: none;
+      transition: all 0.12s ease;
+    }
+
+    .day-cell.empty { background: transparent; }
+
+    .day-cell.weekend {
+      cursor: pointer;
+      color: #bbb;
+      background: #fafafa;
+      border: 1.5px solid #f0f0f0;
+      font-size: 0.82rem;
+    }
+
+    .day-cell.weekend:hover {
+      border-color: #d0d0d0;
+      background: #f4f4f4;
+    }
+
+    .day-cell.workday {
+      cursor: pointer;
+      border: 1.5px solid #ebebeb;
+      background: #fff;
+    }
+
+    .day-cell.workday:hover {
+      border-color: #c0c0c0;
+      background: #f8f8f8;
+    }
+
+    .day-cell.workday.today {
+      border-color: #6366f1;
+      color: #6366f1;
+      font-weight: 700;
+    }
+
+    .day-cell.in-office {
+      background: #22c55e !important;
+      border-color: #16a34a !important;
+      color: #fff !important;
+      font-weight: 600;
+    }
+
+    .day-cell.pto {
+      background: #f59e0b !important;
+      border-color: #d97706 !important;
+      color: #fff !important;
+      font-weight: 600;
+    }
+
+    /* Legend */
+    .legend {
+      display: flex;
+      gap: 18px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+      padding-top: 16px;
+      border-top: 1px solid #f0f0f0;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 0.78rem;
+      color: #666;
+    }
+
+    .legend-swatch {
+      width: 16px;
+      height: 16px;
+      border-radius: 5px;
+      flex-shrink: 0;
+    }
+
+    .legend-swatch.in-office { background: #22c55e; }
+    .legend-swatch.pto       { background: #f59e0b; }
+    .legend-swatch.workday   { background: #fff; border: 1.5px solid #ddd; }
+
+    /* ── Status Panel ── */
+    .status-section {
+      width: 270px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .stat-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 18px 20px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    }
+
+    .stat-card .label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #aaa;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+    }
+
+    .stat-card .value {
+      font-size: 2.4rem;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+
+    .stat-card .sub {
+      font-size: 0.75rem;
+      color: #bbb;
+      margin-top: 5px;
+    }
+
+    .card-total    .value { color: #6366f1; }
+    .card-required .value { color: #3b82f6; }
+    .card-in-office .value { color: #22c55e; }
+    .card-remaining .value { color: #ef4444; }
+    .card-remaining.met   .value { color: #22c55e; }
+
+    /* Progress card */
+    .progress-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 18px 20px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 10px;
+    }
+
+    .progress-header .prog-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #aaa;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .progress-header .prog-pct {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #1a1a2e;
+      letter-spacing: -0.02em;
+    }
+
+    .progress-track {
+      height: 12px;
+      background: #f0f0f2;
+      border-radius: 99px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: #22c55e;
+      transition: width 0.35s ease, background 0.35s ease;
+    }
+
+    .progress-fill.warning { background: #f59e0b; }
+    .progress-fill.danger  { background: #ef4444; }
+
+    .progress-target-line {
+      position: absolute;
+      top: 0;
+      left: 60%;
+      width: 2px;
+      height: 100%;
+      background: rgba(99,102,241,0.5);
+      transform: translateX(-50%);
+    }
+
+    .progress-footer {
+      margin-top: 8px;
+      font-size: 0.72rem;
+      color: #bbb;
+      text-align: right;
+    }
+
+    @media (max-width: 700px) {
+      .app { flex-direction: column; }
+      .status-section { width: 100%; flex-direction: row; flex-wrap: wrap; }
+      .stat-card { flex: 1; min-width: 120px; }
+      .progress-card { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Office Attendance Tracker</h1>
+  <p>Click any day to cycle: In Office → Holiday/PTO → Clear &nbsp;·&nbsp; Weekends don't count toward the 60% requirement</p>
+</header>
+
+<div class="app">
+  <!-- Calendar -->
+  <div class="calendar-section">
+    <div class="month-nav">
+      <button class="nav-btn" id="prevMonth">&#8249;</button>
+      <h2 id="monthTitle"></h2>
+      <button class="nav-btn" id="nextMonth">&#8250;</button>
+    </div>
+    <div class="calendar-grid" id="calendarGrid"></div>
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-swatch in-office"></div>
+        <span>In Office (1st click)</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-swatch pto"></div>
+        <span>Holiday / PTO (2nd click)</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-swatch workday"></div>
+        <span>Clear (3rd click)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Status -->
+  <div class="status-section">
+    <div class="stat-card card-total">
+      <div class="label">Working Days</div>
+      <div class="value" id="statTotal">—</div>
+      <div class="sub">Weekdays excluding PTO &amp; holidays</div>
+    </div>
+    <div class="stat-card card-required">
+      <div class="label">Required (60%)</div>
+      <div class="value" id="statRequired">—</div>
+      <div class="sub">Minimum days in office needed</div>
+    </div>
+    <div class="stat-card card-in-office">
+      <div class="label">In Office So Far</div>
+      <div class="value" id="statInOffice">—</div>
+      <div class="sub">Days marked as in office</div>
+    </div>
+    <div class="stat-card card-remaining" id="cardRemaining">
+      <div class="label">Still Needed</div>
+      <div class="value" id="statRemaining">—</div>
+      <div class="sub" id="subRemaining">Days left to reach 60%</div>
+    </div>
+    <div class="progress-card">
+      <div class="progress-header">
+        <span class="prog-label">Progress toward 60%</span>
+        <span class="prog-pct" id="progPct">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progFill" style="width:0%"></div>
+        <div class="progress-target-line"></div>
+      </div>
+      <div class="progress-footer">Target line at 60%</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const STORAGE_KEY = 'office-tracker-v1';
+
+  let year  = new Date().getFullYear();
+  let month = new Date().getMonth(); // 0-indexed
+
+  function loadAll() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+    catch { return {}; }
+  }
+
+  function saveAll(data) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }
+
+  function monthKey(y, m) {
+    return `${y}-${String(m + 1).padStart(2, '0')}`;
+  }
+
+  function getMonthData(y, m) {
+    return loadAll()[monthKey(y, m)] || {};
+  }
+
+  function setDay(y, m, d, state) {
+    const all = loadAll();
+    const key = monthKey(y, m);
+    if (!all[key]) all[key] = {};
+    if (state === null) delete all[key][d];
+    else all[key][d] = state;
+    saveAll(all);
+  }
+
+  function isWeekend(y, m, d) {
+    const dow = new Date(y, m, d).getDay();
+    return dow === 0 || dow === 6;
+  }
+
+  function daysInMonth(y, m) {
+    return new Date(y, m + 1, 0).getDate();
+  }
+
+  function render() {
+    const MONTHS = ['January','February','March','April','May','June',
+                    'July','August','September','October','November','December'];
+    document.getElementById('monthTitle').textContent = `${MONTHS[month]} ${year}`;
+
+    const total   = daysInMonth(year, month);
+    const firstDow = new Date(year, month, 1).getDay(); // 0=Sun
+    const data    = getMonthData(year, month);
+    const today   = new Date();
+    const isThisMonth = today.getFullYear() === year && today.getMonth() === month;
+
+    const DOW_HEADERS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    let html = DOW_HEADERS.map(h => `<div class="day-header">${h}</div>`).join('');
+
+    // blank spacers
+    for (let i = 0; i < firstDow; i++) {
+      html += `<div class="day-cell empty"></div>`;
+    }
+
+    for (let d = 1; d <= total; d++) {
+      const weekend = isWeekend(year, month, d);
+      const state   = data[d] || null;
+      const isToday = isThisMonth && d === today.getDate();
+
+      let cls = ['day-cell'];
+      if (weekend) {
+        cls.push('weekend');
+        if (state === 'in-office') cls.push('in-office');
+        if (state === 'pto')       cls.push('pto');
+      } else {
+        cls.push('workday');
+        if (isToday && !state) cls.push('today');
+        if (state === 'in-office') cls.push('in-office');
+        if (state === 'pto')       cls.push('pto');
+      }
+
+      html += `<div class="${cls.join(' ')}" onclick="cycleDay(${d})">${d}</div>`;
+    }
+
+    document.getElementById('calendarGrid').innerHTML = html;
+    updateStats(total, data);
+  }
+
+  function cycleDay(d) {
+    const data = getMonthData(year, month);
+    const cur  = data[d] || null;
+    const next = cur === null ? 'in-office' : cur === 'in-office' ? 'pto' : null;
+    setDay(year, month, d, next);
+    render();
+  }
+
+  function updateStats(total, data) {
+    let workdays   = 0; // weekdays that are NOT pto
+    let inOffice   = 0;
+
+    for (let d = 1; d <= total; d++) {
+      if (isWeekend(year, month, d)) continue;
+      const state = data[d] || null;
+      if (state === 'pto') continue; // excluded from requirement
+      workdays++;
+      if (state === 'in-office') inOffice++;
+    }
+
+    const required  = Math.ceil(workdays * 0.6);
+    const remaining = Math.max(0, required - inOffice);
+    const pct       = workdays > 0 ? Math.round((inOffice / workdays) * 100) : 0;
+
+    document.getElementById('statTotal').textContent    = workdays;
+    document.getElementById('statRequired').textContent = required;
+    document.getElementById('statInOffice').textContent = inOffice;
+    document.getElementById('statRemaining').textContent = remaining;
+
+    const card    = document.getElementById('cardRemaining');
+    const sub     = document.getElementById('subRemaining');
+    if (remaining === 0 && workdays > 0) {
+      card.classList.add('met');
+      sub.textContent = 'Requirement met ✓';
+    } else {
+      card.classList.remove('met');
+      sub.textContent = 'Days left to reach 60%';
+    }
+
+    document.getElementById('progPct').textContent = `${pct}%`;
+
+    const fill = document.getElementById('progFill');
+    fill.style.width = `${Math.min(100, pct)}%`;
+    fill.className = 'progress-fill' +
+      (pct >= 60 ? '' : pct >= 40 ? ' warning' : ' danger');
+  }
+
+  document.getElementById('prevMonth').addEventListener('click', () => {
+    month--;
+    if (month < 0) { month = 11; year--; }
+    render();
+  });
+
+  document.getElementById('nextMonth').addEventListener('click', () => {
+    month++;
+    if (month > 11) { month = 0; year++; }
+    render();
+  });
+
+  render();
+</script>
+</body>
+</html>
