@@ -7,17 +7,65 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    :root {
+      --bg:           #f0f2f5;
+      --text:         #1a1a2e;
+      --text-muted:   #888;
+      --text-faint:   #666;
+      --surface:      #fff;
+      --surface2:     #fafafa;
+      --surface3:     #f8f8f8;
+      --border:       #ebebeb;
+      --border-hover: #c0c0c0;
+      --border-light: #f0f0f0;
+      --border-panel: #f4f4f6;
+      --btn-bg:       #f5f5f7;
+      --btn-hover:    #e8e8ea;
+      --shadow:       rgba(0,0,0,0.07);
+      --prog-track:   #f0f0f2;
+      --weekend-text: #bbb;
+      --weekend-bg:   #fafafa;
+      --weekend-border: #f0f0f0;
+      --legend-workday-bg: #fff;
+      --legend-workday-border: #ddd;
+    }
+
+    body.dark {
+      --bg:           #0f1117;
+      --text:         #e8eaf0;
+      --text-muted:   #6b7280;
+      --text-faint:   #9ca3af;
+      --surface:      #1c1f27;
+      --surface2:     #161920;
+      --surface3:     #222630;
+      --border:       #2d3140;
+      --border-hover: #4b5268;
+      --border-light: #252830;
+      --border-panel: #252830;
+      --btn-bg:       #252830;
+      --btn-hover:    #2e3240;
+      --shadow:       rgba(0,0,0,0.35);
+      --prog-track:   #252830;
+      --weekend-text: #4b5268;
+      --weekend-bg:   #161920;
+      --weekend-border: #252830;
+      --legend-workday-bg: #1c1f27;
+      --legend-workday-border: #3a3f52;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #f0f2f5;
-      color: #1a1a2e;
+      background: var(--bg);
+      color: var(--text);
       min-height: 100vh;
       padding: 28px 20px;
+      transition: background 0.2s, color 0.2s;
     }
 
     header {
       text-align: center;
       margin-bottom: 28px;
+      position: relative;
     }
 
     header h1 {
@@ -28,9 +76,87 @@
 
     header p {
       font-size: 0.85rem;
-      color: #888;
+      color: var(--text-muted);
       margin-top: 4px;
     }
+
+    /* ── Dark mode toggle ── */
+    .dark-toggle {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--btn-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      width: 36px;
+      height: 36px;
+      font-size: 1rem;
+      cursor: pointer;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .dark-toggle:hover { background: var(--btn-hover); color: var(--text); }
+
+    /* ── File sync ── */
+    .file-sync {
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .sync-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .sync-dot.ok   { background: #22c55e; }
+    .sync-dot.warn { background: #f59e0b; }
+    .sync-dot.err  { background: #ef4444; }
+
+    .sync-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      max-width: 160px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .sync-label.saving { font-style: italic; color: var(--text-muted); }
+
+    .btn-connect {
+      background: var(--btn-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      padding: 5px 10px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .btn-connect:hover { background: var(--btn-hover); border-color: #6366f1; color: #6366f1; }
+
+    .btn-sync-sm {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      color: var(--text-muted);
+      font-size: 0.7rem;
+      padding: 3px 8px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .btn-sync-sm:hover { border-color: var(--border-hover); color: var(--text); }
 
     .app {
       display: flex;
@@ -43,10 +169,11 @@
     /* ── Calendar ── */
     .calendar-section {
       flex: 1;
-      background: #fff;
+      background: var(--surface);
       border-radius: 16px;
       padding: 24px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+      box-shadow: 0 2px 12px var(--shadow);
+      transition: background 0.2s, box-shadow 0.2s;
     }
 
     .month-nav {
@@ -62,33 +189,34 @@
     }
 
     .nav-btn {
-      background: #f5f5f7;
+      background: var(--btn-bg);
       border: none;
       border-radius: 8px;
       width: 34px;
       height: 34px;
       font-size: 1.1rem;
       cursor: pointer;
-      color: #444;
+      color: var(--text-muted);
       display: flex;
       align-items: center;
       justify-content: center;
       transition: background 0.15s;
     }
 
-    .nav-btn:hover { background: #e8e8ea; }
+    .nav-btn:hover { background: var(--btn-hover); }
 
     .calendar-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
       gap: 5px;
+      touch-action: none;
     }
 
     .day-header {
       text-align: center;
       font-size: 0.7rem;
       font-weight: 600;
-      color: #aaa;
+      color: var(--text-muted);
       padding-bottom: 6px;
       text-transform: uppercase;
       letter-spacing: 0.04em;
@@ -109,26 +237,26 @@
 
     .day-cell.weekend {
       cursor: pointer;
-      color: #bbb;
-      background: #fafafa;
-      border: 1.5px solid #f0f0f0;
+      color: var(--weekend-text);
+      background: var(--weekend-bg);
+      border: 1.5px solid var(--weekend-border);
       font-size: 0.82rem;
     }
 
     .day-cell.weekend:hover {
-      border-color: #d0d0d0;
-      background: #f4f4f4;
+      border-color: var(--border-hover);
+      background: var(--surface3);
     }
 
     .day-cell.workday {
       cursor: pointer;
-      border: 1.5px solid #ebebeb;
-      background: #fff;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
     }
 
     .day-cell.workday:hover {
-      border-color: #c0c0c0;
-      background: #f8f8f8;
+      border-color: var(--border-hover);
+      background: var(--surface3);
     }
 
     .day-cell.workday.today {
@@ -140,6 +268,13 @@
     .day-cell.in-office {
       background: #22c55e !important;
       border-color: #16a34a !important;
+      color: #fff !important;
+      font-weight: 600;
+    }
+
+    .day-cell.planned {
+      background: #818cf8 !important;
+      border-color: #6366f1 !important;
       color: #fff !important;
       font-weight: 600;
     }
@@ -158,7 +293,7 @@
       margin-top: 20px;
       flex-wrap: wrap;
       padding-top: 16px;
-      border-top: 1px solid #f0f0f0;
+      border-top: 1px solid var(--border-light);
     }
 
     .legend-item {
@@ -166,7 +301,7 @@
       align-items: center;
       gap: 7px;
       font-size: 0.78rem;
-      color: #666;
+      color: var(--text-faint);
     }
 
     .legend-swatch {
@@ -177,85 +312,88 @@
     }
 
     .legend-swatch.in-office { background: #22c55e; }
+    .legend-swatch.planned   { background: #818cf8; }
     .legend-swatch.pto       { background: #f59e0b; }
-    .legend-swatch.workday   { background: #fff; border: 1.5px solid #ddd; }
+    .legend-swatch.workday   { background: var(--legend-workday-bg); border: 1.5px solid var(--legend-workday-border); }
 
     /* ── Status Panel ── */
     .status-section {
-      width: 270px;
+      width: 230px;
+      flex-shrink: 0;
+    }
+
+    .stats-panel {
+      background: var(--surface);
+      border-radius: 14px;
+      padding: 6px 0;
+      box-shadow: 0 2px 12px var(--shadow);
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+
+    .stat-row {
       display: flex;
-      flex-direction: column;
-      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 16px;
+      gap: 10px;
     }
 
-    .stat-card {
-      background: #fff;
-      border-radius: 14px;
-      padding: 18px 20px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    .stat-row + .stat-row {
+      border-top: 1px solid var(--border-panel);
     }
 
-    .stat-card .label {
-      font-size: 0.7rem;
-      font-weight: 600;
-      color: #aaa;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin-bottom: 6px;
+    .stat-row .label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      white-space: nowrap;
     }
 
-    .stat-card .value {
-      font-size: 2.4rem;
-      font-weight: 800;
-      line-height: 1;
-      letter-spacing: -0.03em;
+    .stat-row .value {
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
     }
 
-    .stat-card .sub {
-      font-size: 0.75rem;
-      color: #bbb;
-      margin-top: 5px;
-    }
+    .stat-row.card-total     .value { color: #6366f1; }
+    .stat-row.card-required  .value { color: #3b82f6; }
+    .stat-row.card-in-office .value { color: #22c55e; }
+    .stat-row.card-daysweek  .value { color: #16a34a; }
+    .stat-row.card-projected .value { color: #818cf8; }
+    .stat-row.card-remaining .value { color: #ef4444; }
+    .stat-row.card-remaining.met .value { color: #22c55e; }
 
-    .card-total    .value { color: #6366f1; }
-    .card-required .value { color: #3b82f6; }
-    .card-in-office .value { color: #22c55e; }
-    .card-remaining .value { color: #ef4444; }
-    .card-remaining.met   .value { color: #22c55e; }
-
-    /* Progress card */
-    .progress-card {
-      background: #fff;
-      border-radius: 14px;
-      padding: 18px 20px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    /* Progress section inside panel */
+    .progress-section {
+      padding: 10px 16px 12px;
+      border-top: 1px solid var(--border-panel);
     }
 
     .progress-header {
       display: flex;
       justify-content: space-between;
       align-items: baseline;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
     .progress-header .prog-label {
-      font-size: 0.7rem;
+      font-size: 0.72rem;
       font-weight: 600;
-      color: #aaa;
+      color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 0.06em;
     }
 
     .progress-header .prog-pct {
-      font-size: 1.4rem;
+      font-size: 1.1rem;
       font-weight: 800;
-      color: #1a1a2e;
+      color: var(--text);
       letter-spacing: -0.02em;
     }
 
     .progress-track {
-      height: 12px;
-      background: #f0f0f2;
+      height: 8px;
+      background: var(--prog-track);
       border-radius: 99px;
       overflow: hidden;
       position: relative;
@@ -282,25 +420,88 @@
     }
 
     .progress-footer {
-      margin-top: 8px;
-      font-size: 0.72rem;
-      color: #bbb;
+      margin-top: 5px;
+      font-size: 0.68rem;
+      color: var(--text-muted);
       text-align: right;
     }
 
+    /* ── Multi-select ── */
+    .multiselect-btn {
+      background: var(--btn-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0 13px;
+      height: 34px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--text-muted);
+      white-space: nowrap;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .multiselect-btn:hover { background: var(--btn-hover); color: var(--text); }
+    .multiselect-btn.active { background: #6366f1; border-color: #4f46e5; color: #fff; }
+
+    .day-cell.ms-selected {
+      outline: 2.5px solid #6366f1;
+      outline-offset: 1px;
+    }
+    .day-cell.ms-selected.in-office { outline-color: #16a34a; }
+    .day-cell.ms-selected.planned   { outline-color: #4f46e5; }
+    .day-cell.ms-selected.pto       { outline-color: #d97706; }
+
+    .multiselect-bar {
+      display: none;
+      margin-top: 14px;
+      padding: 11px 14px;
+      background: var(--surface2);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .multiselect-bar.visible { display: flex; }
+
+    .ms-count {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      flex: 1;
+      min-width: 80px;
+    }
+
+    .ms-action-btn {
+      border: none;
+      border-radius: 7px;
+      padding: 6px 13px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: #fff;
+      transition: opacity 0.15s;
+    }
+    .ms-action-btn:hover { opacity: 0.82; }
+    .ms-action-btn.planned   { background: #818cf8; }
+    .ms-action-btn.in-office { background: #22c55e; }
+    .ms-action-btn.pto       { background: #f59e0b; }
+    .ms-action-btn.clear     { background: var(--btn-bg); color: var(--text-muted); border: 1px solid var(--border); }
+    .ms-action-btn.cancel    { background: var(--btn-bg); color: var(--text-muted); border: 1px solid var(--border); margin-left: auto; }
+
     @media (max-width: 700px) {
       .app { flex-direction: column; }
-      .status-section { width: 100%; flex-direction: row; flex-wrap: wrap; }
-      .stat-card { flex: 1; min-width: 120px; }
-      .progress-card { width: 100%; }
+      .status-section { width: 100%; }
+      .dark-toggle { right: 0; }
     }
   </style>
 </head>
 <body>
 
 <header>
+  <div class="file-sync" id="fileSync"></div>
   <h1>Office Attendance Tracker</h1>
-  <p>Click any day to cycle: In Office → Holiday/PTO → Clear &nbsp;·&nbsp; Weekends don't count toward the 60% requirement</p>
+  <p>Click any day to cycle: Planned → In Office → Holiday/PTO → Clear &nbsp;·&nbsp; Weekends don't count toward the 60% requirement</p>
+  <button class="dark-toggle" id="darkToggle" title="Toggle dark mode">🌙</button>
 </header>
 
 <div class="app">
@@ -309,66 +510,102 @@
     <div class="month-nav">
       <button class="nav-btn" id="prevMonth">&#8249;</button>
       <h2 id="monthTitle"></h2>
+      <button class="multiselect-btn" id="multiselectBtn" onclick="toggleMultiSelect()" title="Select multiple days">Multi-Select</button>
       <button class="nav-btn" id="nextMonth">&#8250;</button>
     </div>
     <div class="calendar-grid" id="calendarGrid"></div>
+    <div class="multiselect-bar" id="multiselectBar">
+      <span class="ms-count" id="msCount">0 days selected</span>
+      <button class="ms-action-btn planned"   onclick="applyToSelected('planned')">Planned</button>
+      <button class="ms-action-btn in-office" onclick="applyToSelected('in-office')">In Office</button>
+      <button class="ms-action-btn pto"       onclick="applyToSelected('pto')">PTO / Holiday</button>
+      <button class="ms-action-btn clear"     onclick="applyToSelected(null)">Clear</button>
+      <button class="ms-action-btn cancel"    onclick="cancelMultiSelect()">Cancel</button>
+    </div>
     <div class="legend">
       <div class="legend-item">
+        <div class="legend-swatch planned"></div>
+        <span>Planned (1st click)</span>
+      </div>
+      <div class="legend-item">
         <div class="legend-swatch in-office"></div>
-        <span>In Office (1st click)</span>
+        <span>In Office (2nd click)</span>
       </div>
       <div class="legend-item">
         <div class="legend-swatch pto"></div>
-        <span>Holiday / PTO (2nd click)</span>
+        <span>Holiday / PTO (3rd click)</span>
       </div>
       <div class="legend-item">
         <div class="legend-swatch workday"></div>
-        <span>Clear (3rd click)</span>
+        <span>Clear (4th click)</span>
       </div>
     </div>
   </div>
 
   <!-- Status -->
   <div class="status-section">
-    <div class="stat-card card-total">
-      <div class="label">Working Days</div>
-      <div class="value" id="statTotal">—</div>
-      <div class="sub">Weekdays excluding PTO &amp; holidays</div>
-    </div>
-    <div class="stat-card card-required">
-      <div class="label">Required (60%)</div>
-      <div class="value" id="statRequired">—</div>
-      <div class="sub">Minimum days in office needed</div>
-    </div>
-    <div class="stat-card card-in-office">
-      <div class="label">In Office So Far</div>
-      <div class="value" id="statInOffice">—</div>
-      <div class="sub">Days marked as in office</div>
-    </div>
-    <div class="stat-card card-remaining" id="cardRemaining">
-      <div class="label">Still Needed</div>
-      <div class="value" id="statRemaining">—</div>
-      <div class="sub" id="subRemaining">Days left to reach 60%</div>
-    </div>
-    <div class="progress-card">
-      <div class="progress-header">
-        <span class="prog-label">Progress toward 60%</span>
-        <span class="prog-pct" id="progPct">0%</span>
+    <div class="stats-panel">
+      <div class="stat-row card-total">
+        <span class="label">Working Days</span>
+        <span class="value" id="statTotal">—</span>
       </div>
-      <div class="progress-track">
-        <div class="progress-fill" id="progFill" style="width:0%"></div>
-        <div class="progress-target-line"></div>
+      <div class="stat-row card-required">
+        <span class="label">Required (60%)</span>
+        <span class="value" id="statRequired">—</span>
       </div>
-      <div class="progress-footer">Target line at 60%</div>
+      <div class="stat-row card-in-office">
+        <span class="label">In Office So Far</span>
+        <span class="value" id="statInOffice">—</span>
+      </div>
+      <div class="stat-row card-remaining" id="cardRemaining">
+        <span class="label" id="subRemaining">Still Needed</span>
+        <span class="value" id="statRemaining">—</span>
+      </div>
+      <div class="stat-row card-daysweek">
+        <span class="label">Days/Week (Actual)</span>
+        <span class="value" id="statDaysWeek">—</span>
+      </div>
+      <div class="stat-row card-projected">
+        <span class="label">Days/Week (Projected)</span>
+        <span class="value" id="statProjWeek">—</span>
+      </div>
+      <div class="progress-section">
+        <div class="progress-header">
+          <span class="prog-label">Progress toward 60%</span>
+          <span class="prog-pct" id="progPct">0%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progFill" style="width:0%"></div>
+          <div class="progress-target-line"></div>
+        </div>
+        <div class="progress-footer">Target line at 60%</div>
+      </div>
     </div>
   </div>
 </div>
 
 <script>
   const STORAGE_KEY = 'office-tracker-v1';
+  const IDB_NAME    = 'office-tracker-fs-v1';
+  const IDB_STORE   = 'handles';
 
+  // ── Dark mode ────────────────────────────────────────────────────────────────
+  const darkToggle = document.getElementById('darkToggle');
+  const isDark = () => document.body.classList.contains('dark');
+
+  function applyDark(dark) {
+    document.body.classList.toggle('dark', dark);
+    darkToggle.textContent = dark ? '☀️' : '🌙';
+    localStorage.setItem('office-dark-mode', dark ? '1' : '0');
+  }
+
+  const savedDark = localStorage.getItem('office-dark-mode');
+  applyDark(savedDark !== null ? savedDark === '1' : window.matchMedia('(prefers-color-scheme: dark)').matches);
+  darkToggle.addEventListener('click', () => applyDark(!isDark()));
+
+  // ── Data ─────────────────────────────────────────────────────────────────────
   let year  = new Date().getFullYear();
-  let month = new Date().getMonth(); // 0-indexed
+  let month = new Date().getMonth();
 
   function loadAll() {
     try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
@@ -377,15 +614,11 @@
 
   function saveAll(data) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    scheduleSave();
   }
 
-  function monthKey(y, m) {
-    return `${y}-${String(m + 1).padStart(2, '0')}`;
-  }
-
-  function getMonthData(y, m) {
-    return loadAll()[monthKey(y, m)] || {};
-  }
+  function monthKey(y, m) { return `${y}-${String(m + 1).padStart(2, '0')}`; }
+  function getMonthData(y, m) { return loadAll()[monthKey(y, m)] || {}; }
 
   function setDay(y, m, d, state) {
     const all = loadAll();
@@ -396,152 +629,360 @@
     saveAll(all);
   }
 
-  function isWeekend(y, m, d) {
-    const dow = new Date(y, m, d).getDay();
-    return dow === 0 || dow === 6;
+  function isWeekend(y, m, d) { const dow = new Date(y, m, d).getDay(); return dow === 0 || dow === 6; }
+  function daysInMonth(y, m)  { return new Date(y, m + 1, 0).getDate(); }
+
+  // ── IndexedDB helpers ─────────────────────────────────────────────────────────
+  function openIDB() {
+    return new Promise((res, rej) => {
+      const req = indexedDB.open(IDB_NAME, 1);
+      req.onupgradeneeded = e => e.target.result.createObjectStore(IDB_STORE);
+      req.onsuccess = e => res(e.target.result);
+      req.onerror   = e => rej(e.target.error);
+    });
   }
 
-  function daysInMonth(y, m) {
-    return new Date(y, m + 1, 0).getDate();
+  async function idbSet(key, val) {
+    const db = await openIDB();
+    return new Promise((res, rej) => {
+      const tx = db.transaction(IDB_STORE, 'readwrite');
+      tx.objectStore(IDB_STORE).put(val, key);
+      tx.oncomplete = res;
+      tx.onerror    = e => rej(e.target.error);
+    });
   }
 
+  async function idbGet(key) {
+    const db = await openIDB();
+    return new Promise((res, rej) => {
+      const tx  = db.transaction(IDB_STORE, 'readonly');
+      const req = tx.objectStore(IDB_STORE).get(key);
+      req.onsuccess = () => res(req.result ?? null);
+      req.onerror   = e => rej(e.target.error);
+    });
+  }
+
+  async function idbDel(key) {
+    const db = await openIDB();
+    return new Promise((res, rej) => {
+      const tx = db.transaction(IDB_STORE, 'readwrite');
+      tx.objectStore(IDB_STORE).delete(key);
+      tx.oncomplete = res;
+      tx.onerror    = e => rej(e.target.error);
+    });
+  }
+
+  async function verifyPermission(handle, request = false) {
+    try {
+      const opts = { mode: 'readwrite' };
+      if (await handle.queryPermission(opts) === 'granted') return true;
+      if (request && await handle.requestPermission(opts) === 'granted') return true;
+    } catch {}
+    return false;
+  }
+
+  // ── File sync ─────────────────────────────────────────────────────────────────
+  let fileHandle = null;
+  let fileStatus = 'idle'; // 'idle' | 'needs-permission' | 'connected' | 'saving' | 'error'
+  let saveTimer  = null;
+
+  function renderSyncUI() {
+    const el = document.getElementById('fileSync');
+    if (fileStatus === 'idle') {
+      el.innerHTML = `<button class="btn-connect" onclick="connectFile()">Connect to OneDrive file</button>`;
+    } else if (fileStatus === 'needs-permission') {
+      el.innerHTML = `<span class="sync-dot warn"></span><span class="sync-label">${fileHandle?.name ?? ''}</span><button class="btn-sync-sm" onclick="grantPermission()">Grant access</button>`;
+    } else if (fileStatus === 'connected') {
+      el.innerHTML = `<span class="sync-dot ok"></span><span class="sync-label">${fileHandle?.name ?? ''}</span><button class="btn-sync-sm" onclick="disconnectFile()">Disconnect</button>`;
+    } else if (fileStatus === 'saving') {
+      el.innerHTML = `<span class="sync-dot ok"></span><span class="sync-label saving">Saving…</span>`;
+    } else if (fileStatus === 'error') {
+      el.innerHTML = `<span class="sync-dot err"></span><span class="sync-label">File error</span><button class="btn-sync-sm" onclick="connectFile()">Reconnect</button>`;
+    }
+  }
+
+  function setFileStatus(s) { fileStatus = s; renderSyncUI(); }
+
+  function scheduleSave() {
+    if (fileStatus !== 'connected' && fileStatus !== 'saving') return;
+    if (!fileHandle) return;
+    clearTimeout(saveTimer);
+    setFileStatus('saving');
+    saveTimer = setTimeout(async () => {
+      try {
+        const writable = await fileHandle.createWritable();
+        await writable.write(JSON.stringify(loadAll(), null, 2));
+        await writable.close();
+        setFileStatus('connected');
+      } catch {
+        setFileStatus('error');
+      }
+    }, 600);
+  }
+
+  async function applyFileData(handle) {
+    const file = await handle.getFile();
+    const text = await file.text();
+    if (!text.trim()) return false;
+    const data = JSON.parse(text);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    return true;
+  }
+
+  async function connectFile() {
+    if (!('showSaveFilePicker' in window)) {
+      alert('File System Access API requires Chrome or Edge.\nFirefox is not supported.');
+      return;
+    }
+    try {
+      const handle = await window.showSaveFilePicker({
+        suggestedName: 'office-tracker-data.json',
+        types: [{ description: 'Tracker data', accept: { 'application/json': ['.json'] } }],
+      });
+      let loaded = false;
+      try { loaded = await applyFileData(handle); } catch {}
+      if (!loaded) {
+        const w = await handle.createWritable();
+        await w.write(JSON.stringify(loadAll(), null, 2));
+        await w.close();
+      }
+      await idbSet('data-file', handle);
+      fileHandle = handle;
+      setFileStatus('connected');
+      if (loaded) render();
+    } catch (e) {
+      if (e.name !== 'AbortError') setFileStatus('error');
+    }
+  }
+
+  async function grantPermission() {
+    if (!fileHandle) return;
+    const granted = await verifyPermission(fileHandle, true);
+    if (granted) {
+      try { if (await applyFileData(fileHandle)) render(); } catch {}
+      setFileStatus('connected');
+    }
+  }
+
+  async function disconnectFile() {
+    await idbDel('data-file').catch(() => {});
+    fileHandle = null;
+    setFileStatus('idle');
+  }
+
+  // ── Multi-select ──────────────────────────────────────────────────────────────
+  let multiSelectMode = false;
+  let selectedDays = new Set();
+
+  function toggleMultiSelect() {
+    multiSelectMode = !multiSelectMode;
+    if (!multiSelectMode) selectedDays.clear();
+    document.getElementById('multiselectBtn').classList.toggle('active', multiSelectMode);
+    render();
+  }
+
+  function applyToSelected(state) {
+    for (const d of selectedDays) setDay(year, month, d, state);
+    selectedDays.clear();
+    multiSelectMode = false;
+    document.getElementById('multiselectBtn').classList.remove('active');
+    render();
+  }
+
+  function cancelMultiSelect() {
+    selectedDays.clear();
+    multiSelectMode = false;
+    document.getElementById('multiselectBtn').classList.remove('active');
+    render();
+  }
+
+  function handleDayClick(d) {
+    if (multiSelectMode) return; // pointer events handle selection
+    cycleDay(d);
+  }
+
+  // ── Calendar render ───────────────────────────────────────────────────────────
   function render() {
     const MONTHS = ['January','February','March','April','May','June',
                     'July','August','September','October','November','December'];
     document.getElementById('monthTitle').textContent = `${MONTHS[month]} ${year}`;
 
-    const total   = daysInMonth(year, month);
-    const firstDow = new Date(year, month, 1).getDay(); // 0=Sun
-    const data    = getMonthData(year, month);
-    const today   = new Date();
+    const total    = daysInMonth(year, month);
+    const firstDow = new Date(year, month, 1).getDay();
+    const data     = getMonthData(year, month);
+    const today    = new Date();
     const isThisMonth = today.getFullYear() === year && today.getMonth() === month;
 
     const DOW_HEADERS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
     let html = DOW_HEADERS.map(h => `<div class="day-header">${h}</div>`).join('');
 
-    // blank spacers
-    for (let i = 0; i < firstDow; i++) {
-      html += `<div class="day-cell empty"></div>`;
-    }
+    for (let i = 0; i < firstDow; i++) html += `<div class="day-cell empty"></div>`;
 
     for (let d = 1; d <= total; d++) {
       const weekend = isWeekend(year, month, d);
       const state   = data[d] || null;
       const isToday = isThisMonth && d === today.getDate();
-
       let cls = ['day-cell'];
       if (weekend) {
         cls.push('weekend');
-        if (state === 'in-office') cls.push('in-office');
-        if (state === 'pto')       cls.push('pto');
       } else {
         cls.push('workday');
         if (isToday && !state) cls.push('today');
-        if (state === 'in-office') cls.push('in-office');
-        if (state === 'pto')       cls.push('pto');
       }
-
-      html += `<div class="${cls.join(' ')}" onclick="cycleDay(${d})">${d}</div>`;
+      if (state === 'in-office') cls.push('in-office');
+      if (state === 'planned')   cls.push('planned');
+      if (state === 'pto')       cls.push('pto');
+      if (multiSelectMode && selectedDays.has(d)) cls.push('ms-selected');
+      html += `<div class="${cls.join(' ')}" data-day="${d}" onclick="handleDayClick(${d})">${d}</div>`;
     }
 
     document.getElementById('calendarGrid').innerHTML = html;
+
+    const bar = document.getElementById('multiselectBar');
+    if (multiSelectMode) {
+      bar.classList.add('visible');
+      const n = selectedDays.size;
+      document.getElementById('msCount').textContent = n === 1 ? '1 day selected' : `${n} days selected`;
+    } else {
+      bar.classList.remove('visible');
+    }
+
     updateStats(total, data);
   }
 
   function cycleDay(d) {
-    const data = getMonthData(year, month);
-    const cur  = data[d] || null;
-    const next = cur === null ? 'in-office' : cur === 'in-office' ? 'pto' : null;
+    const cur = getMonthData(year, month)[d] || null;
+    let next;
+    if (cur === null)             next = 'planned';
+    else if (cur === 'planned')   next = 'in-office';
+    else if (cur === 'in-office') next = 'pto';
+    else                          next = null;
     setDay(year, month, d, next);
     render();
   }
 
   function updateStats(total, data) {
-    let workdays   = 0; // weekdays that are NOT pto
-    let inOffice   = 0;
-
+    let workdays = 0, inOffice = 0, planned = 0;
     for (let d = 1; d <= total; d++) {
       if (isWeekend(year, month, d)) continue;
       const state = data[d] || null;
-      if (state === 'pto') continue; // excluded from requirement
+      if (state === 'pto') continue;
       workdays++;
       if (state === 'in-office') inOffice++;
+      if (state === 'planned')   planned++;
     }
 
-    const required  = Math.ceil(workdays * 0.6);
-    const remaining = Math.max(0, required - inOffice);
-    const pct       = workdays > 0 ? Math.round((inOffice / workdays) * 100) : 0;
+    const required     = Math.ceil(workdays * 0.6);
+    const remaining    = Math.max(0, required - inOffice);
+    const pct          = workdays > 0 ? Math.round((inOffice / workdays) * 100) : 0;
+    const daysWeek     = workdays > 0 ? ((inOffice / workdays) * 5).toFixed(2) : '—';
+    const projDaysWeek = workdays > 0 ? (((inOffice + planned) / workdays) * 5).toFixed(2) : '—';
 
-    document.getElementById('statTotal').textContent    = workdays;
-    document.getElementById('statRequired').textContent = required;
-    document.getElementById('statInOffice').textContent = inOffice;
+    document.getElementById('statTotal').textContent     = workdays;
+    document.getElementById('statRequired').textContent  = required;
+    document.getElementById('statInOffice').textContent  = inOffice;
+    document.getElementById('statDaysWeek').textContent  = daysWeek;
+    document.getElementById('statProjWeek').textContent  = projDaysWeek;
     document.getElementById('statRemaining').textContent = remaining;
 
-    const card    = document.getElementById('cardRemaining');
-    const sub     = document.getElementById('subRemaining');
+    const card = document.getElementById('cardRemaining');
+    const sub  = document.getElementById('subRemaining');
     if (remaining === 0 && workdays > 0) {
       card.classList.add('met');
       sub.textContent = 'Requirement met ✓';
     } else {
       card.classList.remove('met');
-      sub.textContent = 'Days left to reach 60%';
+      sub.textContent = 'Still Needed';
     }
 
     document.getElementById('progPct').textContent = `${pct}%`;
-
     const fill = document.getElementById('progFill');
     fill.style.width = `${Math.min(100, pct)}%`;
-    fill.className = 'progress-fill' +
-      (pct >= 60 ? '' : pct >= 40 ? ' warning' : ' danger');
+    fill.className = 'progress-fill' + (pct >= 60 ? '' : pct >= 40 ? ' warning' : ' danger');
   }
 
   document.getElementById('prevMonth').addEventListener('click', () => {
-    month--;
-    if (month < 0) { month = 11; year--; }
-    render();
+    month--; if (month < 0) { month = 11; year--; } selectedDays.clear(); render();
   });
-
   document.getElementById('nextMonth').addEventListener('click', () => {
-    month++;
-    if (month > 11) { month = 0; year++; }
-    render();
+    month++; if (month > 11) { month = 0; year++; } selectedDays.clear(); render();
   });
 
-  render();
+  // ── Drag-select ───────────────────────────────────────────────────────────────
+  let isDragging  = false;
+  let dragAddMode = true;
 
-  // ── Auto check-in via WiFi detection ────────────────────────────────────────
+  function initDragSelect() {
+    const grid = document.getElementById('calendarGrid');
+
+    grid.addEventListener('pointerdown', e => {
+      if (!multiSelectMode) return;
+      const cell = e.target.closest('[data-day]');
+      if (!cell) return;
+      e.preventDefault();
+      const d = parseInt(cell.dataset.day);
+      isDragging  = true;
+      dragAddMode = !selectedDays.has(d);
+      dragAddMode ? selectedDays.add(d) : selectedDays.delete(d);
+      render();
+    });
+
+    document.addEventListener('pointermove', e => {
+      if (!isDragging || !multiSelectMode) return;
+      const el = document.elementFromPoint(e.clientX, e.clientY);
+      const cell = el && el.closest('[data-day]');
+      if (!cell) return;
+      const d = parseInt(cell.dataset.day);
+      if (dragAddMode && !selectedDays.has(d)) {
+        selectedDays.add(d); render();
+      } else if (!dragAddMode && selectedDays.has(d)) {
+        selectedDays.delete(d); render();
+      }
+    });
+
+    document.addEventListener('pointerup',     () => { isDragging = false; });
+    document.addEventListener('pointercancel', () => { isDragging = false; });
+  }
+
+  // ── Init ─────────────────────────────────────────────────────────────────────
+  render();
+  renderSyncUI();
+  initDragSelect();
+
+  // Restore file handle from previous session
+  (async () => {
+    try {
+      const handle = await idbGet('data-file');
+      if (!handle) return;
+      fileHandle = handle;
+      const granted = await verifyPermission(handle, false);
+      if (granted) {
+        try { if (await applyFileData(handle)) render(); } catch {}
+        setFileStatus('connected');
+      } else {
+        setFileStatus('needs-permission');
+      }
+    } catch {}
+  })();
+
+  // ── Auto check-in via WiFi detection ─────────────────────────────────────────
   // Triggered when check-office.ps1 opens this file with ?auto=1
   (function autoCheckin() {
     if (!new URLSearchParams(window.location.search).has('auto')) return;
-
     const today = new Date();
-    const y = today.getFullYear();
-    const m = today.getMonth();
-    const d = today.getDate();
-
-    // Only mark weekdays; skip if already marked
+    const y = today.getFullYear(), m = today.getMonth(), d = today.getDate();
     if (isWeekend(y, m, d)) return;
-    const existing = getMonthData(y, m)[d];
-    if (existing) return;
-
-    // Navigate calendar to current month if needed, then mark today
-    year  = y;
-    month = m;
+    if (getMonthData(y, m)[d]) return;
+    year = y; month = m;
     setDay(y, m, d, 'in-office');
     render();
-
-    // Show a brief confirmation banner
     const banner = document.createElement('div');
     banner.textContent = 'Auto-checked in via office WiFi';
     Object.assign(banner.style, {
-      position: 'fixed', bottom: '24px', left: '50%',
-      transform: 'translateX(-50%)',
-      background: '#22c55e', color: '#fff',
-      padding: '10px 22px', borderRadius: '10px',
-      fontWeight: '600', fontSize: '0.9rem',
-      boxShadow: '0 4px 16px rgba(0,0,0,0.18)',
-      zIndex: '9999', opacity: '1',
-      transition: 'opacity 0.5s ease',
+      position: 'fixed', bottom: '24px', left: '50%', transform: 'translateX(-50%)',
+      background: '#22c55e', color: '#fff', padding: '10px 22px', borderRadius: '10px',
+      fontWeight: '600', fontSize: '0.9rem', boxShadow: '0 4px 16px rgba(0,0,0,0.18)',
+      zIndex: '9999', opacity: '1', transition: 'opacity 0.5s ease',
     });
     document.body.appendChild(banner);
     setTimeout(() => { banner.style.opacity = '0'; }, 3000);
