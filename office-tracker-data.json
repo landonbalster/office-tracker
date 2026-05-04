@@ -1,0 +1,34 @@
+{
+  "2026-04": {
+    "1": "in-office",
+    "3": "in-office",
+    "6": "in-office",
+    "8": "in-office",
+    "9": "in-office",
+    "13": "in-office",
+    "14": "in-office",
+    "16": "in-office",
+    "20": "in-office",
+    "21": "in-office",
+    "22": "in-office",
+    "27": "in-office",
+    "28": "in-office",
+    "29": "in-office"
+  },
+  "2026-05": {
+    "1": "in-office",
+    "4": "in-office",
+    "5": "planned",
+    "6": "planned",
+    "8": "pto",
+    "11": "planned",
+    "12": "planned",
+    "13": "planned",
+    "18": "planned",
+    "19": "planned",
+    "20": "planned",
+    "25": "pto",
+    "26": "planned",
+    "27": "planned"
+  }
+}
